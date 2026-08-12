@@ -1,0 +1,155 @@
+/* ── public/css/style.css ─────────────────────────────────────── */
+
+:root {
+  --primary: #0d9488;       /* teal — medical/clinical accent */
+  --primary-dark: #0f766e;
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --bg: #f1f5f9;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text-muted: #64748b;
+  --radius: 10px;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --success: #16a34a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 0.925rem;
+  color: #0f172a;
+}
+
+a { text-decoration: none; }
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+.text-primary { color: var(--primary) !important; }
+.bg-primary { background: var(--primary) !important; }
+
+.app-wrapper { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ───────────────────────────────────────────────────── */
+.sidebar {
+  width: 250px; min-width: 250px;
+  background: var(--sidebar-bg);
+  color: #cbd5e1;
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 1.25rem 1.25rem;
+  font-size: 1.1rem; font-weight: 700; color: #fff;
+  border-bottom: 1px solid #1e293b;
+}
+.sidebar-brand i { color: var(--primary); margin-right: 0.4rem; }
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.sidebar-nav a {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.6rem 1.25rem; color: #94a3b8; font-size: 0.875rem;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+}
+.sidebar-nav a:hover { background: var(--sidebar-hover); color: #fff; }
+.sidebar-nav a.active { background: var(--sidebar-hover); color: #fff; border-left-color: var(--primary); }
+.sidebar-nav a i { width: 18px; text-align: center; }
+.nav-section {
+  padding: 1rem 1.25rem 0.35rem; font-size: 0.7rem;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: #64748b; font-weight: 700;
+}
+
+/* ── Main area ─────────────────────────────────────────────────── */
+.main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  background: #fff; border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.5rem; display: flex; align-items: center;
+  position: sticky; top: 0; z-index: 20;
+}
+.topbar-spacer { flex: 1; }
+.sidebar-toggle { background: none; border: none; font-size: 1.4rem; }
+.content { padding: 1.75rem; flex: 1; }
+.page-footer {
+  padding: 1rem 1.75rem; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.8rem; background: #fff;
+}
+
+/* ── Page header ───────────────────────────────────────────────── */
+.page-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+}
+.page-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
+.page-header .subtitle { color: var(--text-muted); font-size: 0.85rem; }
+
+/* ── Cards ─────────────────────────────────────────────────────── */
+.card { border: 1px solid var(--border); border-radius: var(--radius); }
+.stat-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.25rem; display: flex; align-items: center; gap: 1rem;
+}
+.stat-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: #fff; flex-shrink: 0;
+}
+.stat-value { font-size: 1.4rem; font-weight: 800; line-height: 1.1; }
+.stat-label { color: var(--text-muted); font-size: 0.78rem; }
+
+/* ── Tables ────────────────────────────────────────────────────── */
+.table-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+table.hms-table { margin-bottom: 0; }
+table.hms-table thead th {
+  background: #f8fafc; font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.03em; color: var(--text-muted);
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+table.hms-table td { vertical-align: middle; }
+.badge-status { text-transform: capitalize; }
+
+/* ── Forms ─────────────────────────────────────────────────────── */
+.form-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+label.form-label { font-weight: 600; font-size: 0.85rem; }
+
+/* ── Date filter bar ───────────────────────────────────────────── */
+.date-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.25rem; }
+
+/* ── Login page ────────────────────────────────────────────────── */
+.auth-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0d9488, #0f172a);
+}
+.auth-card {
+  background: #fff; border-radius: 14px; padding: 2.5rem;
+  width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+
+/* ── Invoice / prescription print preview ─────────────────────────── */
+.invoice-box {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 2.5rem; max-width: 850px; margin: 0 auto;
+}
+.invoice-box .company-name { font-size: 1.3rem; font-weight: 800; }
+.invoice-total-row td { font-weight: 700; }
+
+/* ── Bed grid (wards) ──────────────────────────────────────────── */
+.bed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.6rem; }
+.bed-tile {
+  border-radius: 8px; padding: 0.7rem 0.5rem; text-align: center;
+  font-size: 0.78rem; font-weight: 600; border: 1px solid var(--border);
+}
+.bed-tile.available { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.bed-tile.occupied { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+.bed-tile.maintenance { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.bed-tile small { display: block; font-weight: 400; opacity: 0.8; }
+
+/* ── Patient portal ────────────────────────────────────────────── */
+.portal-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+
+@media (max-width: 991px) {
+  .sidebar { position: fixed; left: -260px; z-index: 1000; transition: left 0.2s ease; }
+  .sidebar.show { left: 0; }
+}

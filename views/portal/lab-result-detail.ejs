@@ -1,0 +1,36 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header no-print">
+  <div><h1>Lab Result — <%= new Date(order.order_date).toLocaleDateString() %></h1></div>
+  <button class="btn btn-outline-secondary" data-print><i class="bi bi-printer me-1"></i>Print</button>
+</div>
+
+<div class="invoice-box">
+  <div class="d-flex justify-content-between mb-4">
+    <div><span class="company-name text-primary">MediCore HMS</span><div class="text-muted small">Laboratory Report</div></div>
+    <div class="text-end">
+      <div class="text-muted small"><%= new Date(order.order_date).toLocaleDateString() %></div>
+      <div class="fw-semibold">Dr. <%= order.doctor_name %></div>
+    </div>
+  </div>
+
+  <table class="table hms-table">
+    <thead><tr><th>Test</th><th>Result</th><th>Normal Range</th><th>Notes</th></tr></thead>
+    <tbody>
+      <% items.forEach(i => { %>
+        <tr>
+          <td><%= i.test_name %></td>
+          <td><%= i.result_value || 'Pending' %> <%= i.unit || '' %></td>
+          <td><%= i.normal_range || '—' %></td>
+          <td><%= i.result_notes || '—' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div class="mt-4">
+    <span class="badge badge-status bg-<%= order.status==='completed'?'success':'warning' %>"><%= order.status %></span>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

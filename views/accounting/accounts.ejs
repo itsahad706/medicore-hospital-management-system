@@ -1,0 +1,61 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Chart of Accounts</h1>
+    <div class="subtitle">
+      <a href="/accounting/accounts">Accounts</a> &middot;
+      <a href="/accounting/ledger">General Ledger</a> &middot;
+      <a href="/accounting/trial-balance">Trial Balance</a>
+    </div>
+  </div>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAcctModal"><i class="bi bi-plus-lg me-1"></i>Add Account</button>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Code</th><th>Name</th><th>Type</th><th></th></tr></thead>
+      <tbody>
+        <% if (accounts.length === 0) { %><tr><td colspan="4" class="text-center text-muted py-4">No accounts set up yet. Run the seed script or add accounts manually.</td></tr><% } %>
+        <% accounts.forEach(a => { %>
+          <tr>
+            <td><%= a.code %></td>
+            <td><%= a.name %></td>
+            <td><span class="badge bg-secondary text-uppercase"><%= a.type %></span></td>
+            <td class="text-end">
+              <form method="POST" action="/accounting/accounts/<%= a.id %>?_method=DELETE" class="d-inline" data-confirm="Delete this account?">
+                <%- include('../partials/csrf') %>
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="newAcctModal">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="POST" action="/accounting/accounts">
+      <%- include('../partials/csrf') %>
+      <div class="modal-header"><h5 class="modal-title">Add Account</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-2"><label class="form-label">Code</label><input class="form-control" name="code" placeholder="e.g. 1000" required></div>
+        <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" placeholder="e.g. Cash" required></div>
+        <div class="mb-2">
+          <label class="form-label">Type</label>
+          <select class="form-select" name="type">
+            <option value="asset">Asset</option><option value="liability">Liability</option>
+            <option value="equity">Equity</option><option value="revenue">Revenue</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-primary">Add Account</button></div>
+    </form>
+  </div></div>
+</div>
+
+<%- include('../partials/app-bottom') %>

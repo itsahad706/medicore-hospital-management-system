@@ -1,0 +1,60 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Admit Patient</h1></div>
+</div>
+
+<div class="form-card" style="max-width:640px">
+  <% if (availableBeds.length === 0) { %>
+    <div class="alert alert-warning">No beds are currently available. Free up a bed or add a new ward before admitting a patient.</div>
+  <% } %>
+  <form method="POST" action="/wards/admissions">
+    <%- include('../partials/csrf') %>
+
+    <div class="mb-3">
+      <label class="form-label">Patient *</label>
+      <select name="patient_id" class="form-select" required>
+        <option value="">— Select Patient —</option>
+        <% patients.forEach(p => { %>
+          <option value="<%= p.id %>" <%= String(preselectPatient)===String(p.id)?'selected':'' %>><%= p.name %> (<%= p.mrn %>)</option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Bed *</label>
+      <select name="bed_id" class="form-select" required <%= availableBeds.length===0?'disabled':'' %>>
+        <option value="">— Select Bed —</option>
+        <% availableBeds.forEach(b => { %>
+          <option value="<%= b.id %>"><%= b.ward_name %> — Bed <%= b.bed_number %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Attending Doctor *</label>
+      <select name="doctor_id" class="form-select" required>
+        <option value="">— Select Doctor —</option>
+        <% doctors.forEach(d => { %>
+          <option value="<%= d.id %>">Dr. <%= d.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Diagnosis</label>
+      <input type="text" name="diagnosis" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Notes</label>
+      <textarea name="notes" class="form-control" rows="2"></textarea>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+      <button type="submit" class="btn btn-primary" <%= availableBeds.length===0?'disabled':'' %>>Admit Patient</button>
+      <a href="/wards/admissions" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

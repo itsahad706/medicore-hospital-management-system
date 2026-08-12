@@ -1,0 +1,91 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>New Invoice</h1></div>
+</div>
+
+<div class="form-card">
+  <form method="POST" action="/billing/invoices">
+    <%- include('../partials/csrf') %>
+    <input type="hidden" name="appointment_id" value="<%= appointmentId %>">
+    <input type="hidden" id="totalInput" name="total_display">
+
+    <div class="mb-3" style="max-width:400px">
+      <label class="form-label">Patient *</label>
+      <select name="patient_id" class="form-select" required>
+        <option value="">— Select Patient —</option>
+        <% patients.forEach(p => { %>
+          <option value="<%= p.id %>" <%= String(preselectPatient)===String(p.id)?'selected':'' %>><%= p.name %> (<%= p.mrn %>)</option>
+        <% }) %>
+      </select>
+    </div>
+
+    <table class="table hms-table">
+      <thead><tr><th>Type</th><th>Description</th><th>Qty</th><th>Unit Price</th><th>Amount</th><th></th></tr></thead>
+      <tbody id="itemsBody">
+        <tr>
+          <td>
+            <select name="item_type[]" class="form-select form-select-sm">
+              <option value="consultation">Consultation</option>
+              <option value="medicine">Medicine</option>
+              <option value="lab_test">Lab Test</option>
+              <option value="bed_charge">Bed Charge</option>
+              <option value="procedure">Procedure</option>
+              <option value="other" selected>Other</option>
+            </select>
+          </td>
+          <td><input type="text" name="description[]" class="form-control form-control-sm item-desc" required></td>
+          <td><input type="number" step="0.01" name="quantity[]" class="form-control form-control-sm item-qty" value="1"></td>
+          <td><input type="number" step="0.01" name="unit_price[]" class="form-control form-control-sm item-price" value="0"></td>
+          <td class="item-total">0.00</td>
+          <td><button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="bi bi-x"></i></button></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="text-end">Subtotal</td>
+          <td colspan="2" id="sumSubtotal">0.00</td>
+        </tr>
+        <tr>
+          <td colspan="4" class="text-end">Discount</td>
+          <td colspan="2"><input type="number" step="0.01" id="discountInput" name="discount" class="form-control form-control-sm" value="0" style="max-width:120px"></td>
+        </tr>
+        <tr>
+          <td colspan="4" class="text-end">Tax</td>
+          <td colspan="2"><input type="number" step="0.01" id="taxInput" name="tax" class="form-control form-control-sm" value="0" style="max-width:120px"></td>
+        </tr>
+        <tr class="invoice-total-row">
+          <td colspan="4" class="text-end">Total</td>
+          <td colspan="2" id="sumTotal">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+    <template id="itemRowTemplate">
+      <tr>
+        <td>
+          <select name="item_type[]" class="form-select form-select-sm">
+            <option value="consultation">Consultation</option>
+            <option value="medicine">Medicine</option>
+            <option value="lab_test">Lab Test</option>
+            <option value="bed_charge">Bed Charge</option>
+            <option value="procedure">Procedure</option>
+            <option value="other" selected>Other</option>
+          </select>
+        </td>
+        <td><input type="text" name="description[]" class="form-control form-control-sm item-desc" required></td>
+        <td><input type="number" step="0.01" name="quantity[]" class="form-control form-control-sm item-qty" value="1"></td>
+        <td><input type="number" step="0.01" name="unit_price[]" class="form-control form-control-sm item-price" value="0"></td>
+        <td class="item-total">0.00</td>
+        <td><button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="bi bi-x"></i></button></td>
+      </tr>
+    </template>
+    <button type="button" id="addItemRow" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-plus-lg me-1"></i>Add Line Item</button>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Create Invoice</button>
+      <a href="/billing/invoices" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

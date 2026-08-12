@@ -1,0 +1,26 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>My Prescriptions</h1></div>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Date</th><th>Doctor</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (prescriptions.length === 0) { %><tr><td colspan="4" class="text-center text-muted py-4">No prescriptions on record.</td></tr><% } %>
+        <% prescriptions.forEach(p => { %>
+          <tr>
+            <td><%= new Date(p.created_at).toLocaleDateString() %></td>
+            <td>Dr. <%= p.doctor_name %></td>
+            <td><span class="badge badge-status bg-<%= p.status==='dispensed'?'success':'warning' %>"><%= p.status %></span></td>
+            <td class="text-end"><a href="/portal/prescriptions/<%= p.id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

@@ -1,0 +1,57 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header no-print">
+  <div>
+    <h1>Lab Order #<%= order.id %></h1>
+    <div class="subtitle"><%= order.patient_name %> (<%= order.mrn %>) &middot; Ordered by Dr. <%= order.doctor_name %></div>
+  </div>
+  <button class="btn btn-outline-secondary" data-print><i class="bi bi-printer me-1"></i>Print</button>
+</div>
+
+<div class="invoice-box">
+  <div class="d-flex justify-content-between mb-4">
+    <div><span class="company-name text-primary">MediCore HMS</span><div class="text-muted small">Laboratory Report</div></div>
+    <div class="text-end">
+      <div><strong>Order #<%= order.id %></strong></div>
+      <div class="text-muted small"><%= new Date(order.order_date).toLocaleDateString() %></div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-6"><div class="text-muted small">Patient</div><div class="fw-semibold"><%= order.patient_name %> (<%= order.mrn %>)</div></div>
+    <div class="col-6 text-end"><div class="text-muted small">Referring Doctor</div><div class="fw-semibold">Dr. <%= order.doctor_name %></div></div>
+  </div>
+
+  <table class="table hms-table">
+    <thead><tr><th>Test</th><th>Result</th><th>Normal Range</th><th>Notes</th><th class="no-print"></th></tr></thead>
+    <tbody>
+      <% items.forEach(i => { %>
+        <tr>
+          <td><%= i.test_name %></td>
+          <td>
+            <% if (currentUser.role === 'admin') { %>
+              <form method="POST" action="/lab/orders/<%= order.id %>/items/<%= i.id %>?_method=PUT" class="d-flex gap-1 no-print">
+                <%- include('../partials/csrf') %>
+                <input type="text" name="result_value" class="form-control form-control-sm" value="<%= i.result_value || '' %>" placeholder="Value">
+                <span class="text-muted small align-self-center"><%= i.unit %></span>
+                <button class="btn btn-sm btn-outline-primary">Save</button>
+              </form>
+              <span class="d-none d-print-inline"><%= i.result_value || '—' %> <%= i.unit %></span>
+            <% } else { %>
+              <%= i.result_value || '—' %> <%= i.unit %>
+            <% } %>
+          </td>
+          <td><%= i.normal_range || '—' %></td>
+          <td><%= i.result_notes || '—' %></td>
+          <td class="no-print"><span class="badge bg-<%= i.status==='completed'?'success':'warning' %>"><%= i.status %></span></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div class="mt-4">
+    <span class="badge badge-status bg-<%= order.status==='completed'?'success':order.status==='cancelled'?'danger':'warning' %>"><%= order.status %></span>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

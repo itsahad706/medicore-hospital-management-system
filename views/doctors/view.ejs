@@ -1,0 +1,38 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Dr. <%= doctor.name %></h1>
+    <div class="subtitle"><%= doctor.specialization || 'General' %> &middot; <%= doctor.qualification || '' %></div>
+  </div>
+  <% if (currentUser.role === 'admin') { %>
+    <a href="/doctors/<%= doctor.id %>/edit" class="btn btn-primary btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+  <% } %>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Email</div><div class="fw-semibold"><%= doctor.email %></div></div></div>
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Phone</div><div class="fw-semibold"><%= doctor.phone || '—' %></div></div></div>
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Consultation Fee</div><div class="fw-semibold"><%= Number(doctor.consultation_fee).toFixed(2) %></div></div></div>
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Schedule</div><div class="fw-semibold"><%= doctor.schedule_days %> &middot; <%= doctor.schedule_start %>–<%= doctor.schedule_end %></div></div></div>
+</div>
+
+<div class="table-card">
+  <div class="p-3 border-bottom"><strong>Recent Appointments</strong></div>
+  <table class="table hms-table mb-0">
+    <thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Status</th></tr></thead>
+    <tbody>
+      <% if (appointments.length === 0) { %><tr><td colspan="4" class="text-center text-muted py-3">No appointments yet.</td></tr><% } %>
+      <% appointments.forEach(a => { %>
+        <tr>
+          <td><%= new Date(a.appointment_date).toLocaleDateString() %></td>
+          <td><%= a.appointment_time %></td>
+          <td><%= a.patient_name %></td>
+          <td><span class="badge badge-status bg-<%= a.status==='completed'?'success':a.status==='cancelled'?'danger':'primary' %>"><%= a.status %></span></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/app-bottom') %>

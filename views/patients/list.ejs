@@ -1,0 +1,47 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Patients</h1>
+    <div class="subtitle">All registered patients</div>
+  </div>
+  <% if (currentUser.role === 'admin' || currentUser.role === 'receptionist') { %>
+    <a href="/patients/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Register Patient</a>
+  <% } %>
+</div>
+
+<form method="GET" class="mb-3 d-flex gap-2" style="max-width:400px">
+  <input type="text" name="q" class="form-control" placeholder="Search name, MRN, or phone" value="<%= q %>">
+  <button class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+</form>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>MRN</th><th>Name</th><th>Age / Gender</th><th>Phone</th><th>Blood Group</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (patients.length === 0) { %>
+          <tr><td colspan="7" class="text-center text-muted py-4">No patients found.</td></tr>
+        <% } %>
+        <% patients.forEach(p => { %>
+          <tr>
+            <td><%= p.mrn %></td>
+            <td><a href="/patients/<%= p.id %>"><%= p.name %></a></td>
+            <td><%= p.dob ? calcAge(p.dob) + ' yrs' : '—' %> / <span class="text-capitalize"><%= p.gender %></span></td>
+            <td><%= p.phone || '—' %></td>
+            <td><%= p.blood_group || '—' %></td>
+            <td><span class="badge badge-status bg-<%= p.status==='active'?'success':'secondary' %>"><%= p.status %></span></td>
+            <td class="text-end">
+              <a href="/patients/<%= p.id %>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+              <% if (currentUser.role === 'admin' || currentUser.role === 'receptionist') { %>
+                <a href="/patients/<%= p.id %>/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

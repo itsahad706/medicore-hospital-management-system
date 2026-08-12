@@ -1,0 +1,107 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header no-print">
+  <div>
+    <h1><%= invoice.invoice_number %></h1>
+    <div class="subtitle"><%= invoice.patient_name %> (<%= invoice.mrn %>)</div>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-secondary" data-print><i class="bi bi-printer me-1"></i>Print</button>
+    <% if ((currentUser.role === 'admin' || currentUser.role === 'receptionist') && invoice.status !== 'paid' && invoice.status !== 'cancelled') { %>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#payModal"><i class="bi bi-cash-coin me-1"></i>Record Payment</button>
+    <% } %>
+  </div>
+</div>
+
+<div class="invoice-box">
+  <div class="d-flex justify-content-between mb-4">
+    <div><span class="company-name text-primary">MediCore HMS</span><div class="text-muted small">Tax Invoice</div></div>
+    <div class="text-end">
+      <div><strong><%= invoice.invoice_number %></strong></div>
+      <div class="text-muted small"><%= new Date(invoice.invoice_date).toLocaleDateString() %></div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-6">
+      <div class="text-muted small">Bill To</div>
+      <div class="fw-semibold"><%= invoice.patient_name %></div>
+      <div class="text-muted small"><%= invoice.address || '' %></div>
+      <div class="text-muted small"><%= invoice.phone || '' %></div>
+    </div>
+    <div class="col-6 text-end">
+      <span class="badge badge-status bg-<%= invoice.status==='paid'?'success':invoice.status==='partial'?'warning':invoice.status==='cancelled'?'secondary':'danger' %>"><%= invoice.status %></span>
+    </div>
+  </div>
+
+  <table class="table hms-table">
+    <thead><tr><th>Description</th><th>Type</th><th>Qty</th><th>Unit Price</th><th>Amount</th></tr></thead>
+    <tbody>
+      <% items.forEach(i => { %>
+        <tr>
+          <td><%= i.description %></td>
+          <td class="text-capitalize"><%= i.item_type.replace('_',' ') %></td>
+          <td><%= Number(i.quantity) %></td>
+          <td><%= Number(i.unit_price).toFixed(2) %></td>
+          <td><%= Number(i.amount).toFixed(2) %></td>
+        </tr>
+      <% }) %>
+      <tr><td colspan="4" class="text-end">Subtotal</td><td><%= Number(invoice.subtotal).toFixed(2) %></td></tr>
+      <tr><td colspan="4" class="text-end">Discount</td><td>-<%= Number(invoice.discount).toFixed(2) %></td></tr>
+      <tr><td colspan="4" class="text-end">Tax</td><td><%= Number(invoice.tax).toFixed(2) %></td></tr>
+      <tr class="invoice-total-row"><td colspan="4" class="text-end">Total</td><td><%= Number(invoice.total).toFixed(2) %></td></tr>
+      <tr><td colspan="4" class="text-end">Amount Paid</td><td><%= Number(invoice.amount_paid).toFixed(2) %></td></tr>
+      <tr class="invoice-total-row"><td colspan="4" class="text-end">Balance Due</td><td><%= (Number(invoice.total) - Number(invoice.amount_paid)).toFixed(2) %></td></tr>
+    </tbody>
+  </table>
+
+  <% if (payments.length > 0) { %>
+    <div class="mt-4">
+      <div class="text-muted small mb-2">Payment History</div>
+      <table class="table hms-table">
+        <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th>Amount</th></tr></thead>
+        <tbody>
+          <% payments.forEach(p => { %>
+            <tr>
+              <td><%= new Date(p.payment_date).toLocaleString() %></td>
+              <td class="text-capitalize"><%= p.payment_method.replace('_',' ') %></td>
+              <td><%= p.reference_no || '—' %></td>
+              <td><%= Number(p.amount).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<div class="modal fade no-print" id="payModal">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="POST" action="/billing/invoices/<%= invoice.id %>/payments">
+      <%- include('../partials/csrf') %>
+      <div class="modal-header"><h5 class="modal-title">Record Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <label class="form-label">Amount</label>
+          <input type="number" step="0.01" name="amount" class="form-control" required max="<%= (invoice.total - invoice.amount_paid).toFixed(2) %>" value="<%= (invoice.total - invoice.amount_paid).toFixed(2) %>">
+          <div class="form-text">Balance due: <%= money(invoice.total - invoice.amount_paid) %></div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Payment Method</label>
+          <select name="payment_method" class="form-select">
+            <option value="cash">Cash</option><option value="card">Card</option>
+            <option value="bank_transfer">Bank Transfer</option><option value="insurance">Insurance</option>
+            <option value="online">Online</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Reference No.</label>
+          <input type="text" name="reference_no" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-primary">Record Payment</button></div>
+    </form>
+  </div></div>
+</div>
+
+<%- include('../partials/app-bottom') %>

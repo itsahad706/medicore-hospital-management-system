@@ -1,0 +1,112 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1><%= patient.name %></h1>
+    <div class="subtitle">MRN: <%= patient.mrn %> &middot; <%= patient.dob ? calcAge(patient.dob) + ' yrs' : '—' %> &middot; <span class="text-capitalize"><%= patient.gender %></span> &middot; <%= patient.blood_group || 'Blood group unknown' %></div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="/appointments/new?patient_id=<%= patient.id %>" class="btn btn-outline-primary btn-sm"><i class="bi bi-calendar-plus me-1"></i>Book Appointment</a>
+    <a href="/billing/invoices/new?patient_id=<%= patient.id %>" class="btn btn-outline-primary btn-sm"><i class="bi bi-receipt me-1"></i>New Invoice</a>
+    <% if (currentUser.role === 'admin' || currentUser.role === 'receptionist') { %>
+      <a href="/patients/<%= patient.id %>/edit" class="btn btn-primary btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Phone</div><div class="fw-semibold"><%= patient.phone || '—' %></div></div></div>
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Email</div><div class="fw-semibold"><%= patient.email || '—' %></div></div></div>
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Emergency Contact</div><div class="fw-semibold"><%= patient.emergency_contact || '—' %></div></div></div>
+  <div class="col-md-3"><div class="portal-card"><div class="text-muted small">Allergies</div><div class="fw-semibold text-danger"><%= patient.allergies || 'None recorded' %></div></div></div>
+</div>
+
+<ul class="nav nav-tabs mb-3" id="patientTabs">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-appts">Appointments</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-admissions">Admissions</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-rx">Prescriptions</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-inv">Invoices</button></li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="tab-appts">
+    <div class="table-card">
+      <table class="table hms-table mb-0">
+        <thead><tr><th>Date</th><th>Time</th><th>Doctor</th><th>Reason</th><th>Status</th></tr></thead>
+        <tbody>
+          <% if (appointments.length === 0) { %><tr><td colspan="5" class="text-center text-muted py-3">No appointments yet.</td></tr><% } %>
+          <% appointments.forEach(a => { %>
+            <tr>
+              <td><%= new Date(a.appointment_date).toLocaleDateString() %></td>
+              <td><%= a.appointment_time %></td>
+              <td>Dr. <%= a.doctor_name %></td>
+              <td><%= a.reason || '—' %></td>
+              <td><span class="badge badge-status bg-<%= a.status==='completed'?'success':a.status==='cancelled'?'danger':'primary' %>"><%= a.status %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="tab-admissions">
+    <div class="table-card">
+      <table class="table hms-table mb-0">
+        <thead><tr><th>Ward / Bed</th><th>Admitted</th><th>Discharged</th><th>Diagnosis</th><th>Status</th></tr></thead>
+        <tbody>
+          <% if (admissions.length === 0) { %><tr><td colspan="5" class="text-center text-muted py-3">No admission history.</td></tr><% } %>
+          <% admissions.forEach(a => { %>
+            <tr>
+              <td><%= a.ward_name %> / Bed <%= a.bed_number %></td>
+              <td><%= new Date(a.admission_date).toLocaleString() %></td>
+              <td><%= a.discharge_date ? new Date(a.discharge_date).toLocaleString() : '—' %></td>
+              <td><%= a.diagnosis || '—' %></td>
+              <td><span class="badge badge-status bg-<%= a.status==='admitted'?'warning':'secondary' %>"><%= a.status %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="tab-rx">
+    <div class="table-card">
+      <table class="table hms-table mb-0">
+        <thead><tr><th>Date</th><th>Doctor</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <% if (prescriptions.length === 0) { %><tr><td colspan="4" class="text-center text-muted py-3">No prescriptions yet.</td></tr><% } %>
+          <% prescriptions.forEach(p => { %>
+            <tr>
+              <td><%= new Date(p.created_at).toLocaleDateString() %></td>
+              <td>Dr. <%= p.doctor_name %></td>
+              <td><span class="badge badge-status bg-<%= p.status==='dispensed'?'success':'warning' %>"><%= p.status %></span></td>
+              <td><a href="/pharmacy/prescriptions/<%= p.id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="tab-inv">
+    <div class="table-card">
+      <table class="table hms-table mb-0">
+        <thead><tr><th>Invoice #</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <% if (invoices.length === 0) { %><tr><td colspan="5" class="text-center text-muted py-3">No invoices yet.</td></tr><% } %>
+          <% invoices.forEach(i => { %>
+            <tr>
+              <td><%= i.invoice_number %></td>
+              <td><%= new Date(i.invoice_date).toLocaleDateString() %></td>
+              <td><%= i.total.toFixed(2) %></td>
+              <td><span class="badge badge-status bg-<%= i.status==='paid'?'success':i.status==='partial'?'warning':'danger' %>"><%= i.status %></span></td>
+              <td><a href="/billing/invoices/<%= i.id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

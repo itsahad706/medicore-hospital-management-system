@@ -1,0 +1,64 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1><%= targetUser.id ? 'Edit User' : 'Add User' %></h1></div>
+</div>
+
+<div class="form-card" style="max-width:560px">
+  <form method="POST" action="<%= targetUser.id ? '/users/' + targetUser.id + '?_method=PUT' : '/users' %>">
+    <%- include('../partials/csrf') %>
+
+    <div class="mb-3">
+      <label class="form-label">Full Name *</label>
+      <input type="text" name="name" class="form-control" required value="<%= targetUser.name || '' %>">
+    </div>
+
+    <% if (!targetUser.id) { %>
+      <div class="mb-3">
+        <label class="form-label">Username *</label>
+        <input type="text" name="username" class="form-control" required>
+      </div>
+    <% } %>
+
+    <div class="mb-3">
+      <label class="form-label">Email *</label>
+      <input type="email" name="email" class="form-control" required value="<%= targetUser.email || '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Phone</label>
+      <input type="text" name="phone" class="form-control" value="<%= targetUser.phone || '' %>">
+    </div>
+
+    <% if (!targetUser.id) { %>
+      <div class="mb-3">
+        <label class="form-label">Password *</label>
+        <input type="password" name="password" class="form-control" required minlength="6">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Role *</label>
+        <select name="role" class="form-select" required>
+          <option value="admin">Admin</option>
+          <option value="receptionist">Receptionist</option>
+          <option value="patient">Patient (portal only)</option>
+        </select>
+        <div class="form-text">Doctor accounts are created under the Doctors module.</div>
+      </div>
+    <% } else { %>
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="active" <%= targetUser.status==='active'?'selected':'' %>>Active</option>
+          <option value="inactive" <%= targetUser.status==='inactive'?'selected':'' %>>Inactive</option>
+        </select>
+      </div>
+    <% } %>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save User</button>
+      <a href="/users" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

@@ -1,0 +1,9 @@
+<form method="GET" class="date-filter no-print">
+  <select name="range" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+    <option value="today" <%= filter.range==='today'?'selected':'' %>>Today</option>
+    <option value="week" <%= filter.range==='week'?'selected':'' %>>This Week</option>
+    <option value="month" <%= filter.range==='month'?'selected':'' %>>This Month</option>
+    <option value="year" <%= filter.range==='year'?'selected':'' %>>This Year</option>
+    <option value="all" <%= filter.range==='all'?'selected':'' %>>All Time</option>
+  </select>
+</form>

@@ -1,0 +1,44 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>General Ledger</h1>
+    <div class="subtitle">
+      <a href="/accounting/accounts">Accounts</a> &middot;
+      <a href="/accounting/ledger">General Ledger</a> &middot;
+      <a href="/accounting/trial-balance">Trial Balance</a>
+    </div>
+  </div>
+</div>
+
+<form method="GET" class="mb-3" style="max-width:360px">
+  <select name="account_id" class="form-select" onchange="this.form.submit()">
+    <option value="">— Select an account —</option>
+    <% accounts.forEach(a => { %>
+      <option value="<%= a.id %>" <%= String(accountId)===String(a.id)?'selected':'' %>><%= a.code %> — <%= a.name %></option>
+    <% }) %>
+  </select>
+</form>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Debit</th><th>Credit</th></tr></thead>
+      <tbody>
+        <% if (!accountId) { %><tr><td colspan="5" class="text-center text-muted py-4">Select an account to view its ledger entries.</td></tr><% } %>
+        <% if (accountId && entries.length === 0) { %><tr><td colspan="5" class="text-center text-muted py-4">No transactions posted to this account yet.</td></tr><% } %>
+        <% entries.forEach(e => { %>
+          <tr>
+            <td><%= new Date(e.transaction_date).toLocaleDateString() %></td>
+            <td><%= e.reference || '—' %></td>
+            <td><%= e.description || '—' %></td>
+            <td><%= e.debit > 0 ? money(e.debit) : '' %></td>
+            <td><%= e.credit > 0 ? money(e.credit) : '' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

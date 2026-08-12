@@ -1,0 +1,54 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>New Lab Order</h1></div>
+</div>
+
+<div class="form-card" style="max-width:640px">
+  <form method="POST" action="/lab/orders">
+    <%- include('../partials/csrf') %>
+    <input type="hidden" name="appointment_id" value="<%= appointmentId %>">
+
+    <div class="mb-3">
+      <label class="form-label">Patient *</label>
+      <select name="patient_id" class="form-select" required>
+        <option value="">— Select Patient —</option>
+        <% patients.forEach(p => { %>
+          <option value="<%= p.id %>" <%= String(preselectPatient)===String(p.id)?'selected':'' %>><%= p.name %> (<%= p.mrn %>)</option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Doctor *</label>
+      <% if (currentUser.role === 'doctor') { %>
+        <input type="hidden" name="doctor_id" value="<%= doctorId %>">
+        <input type="text" class="form-control" value="Dr. <%= currentUser.name %>" disabled>
+      <% } else { %>
+        <select name="doctor_id" class="form-select" required>
+          <option value="">— Select Doctor —</option>
+          <% doctorsList.forEach(d => { %><option value="<%= d.id %>">Dr. <%= d.name %></option><% }) %>
+        </select>
+      <% } %>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tests *</label>
+      <div class="border rounded p-2" style="max-height:260px;overflow-y:auto">
+        <% tests.forEach(t => { %>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="lab_test_id[]" value="<%= t.id %>" id="test<%= t.id %>">
+            <label class="form-check-label" for="test<%= t.id %>"><%= t.name %> <span class="text-muted small">(<%= Number(t.price).toFixed(2) %>)</span></label>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Create Order</button>
+      <a href="/lab/orders" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

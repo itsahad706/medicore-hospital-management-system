@@ -1,0 +1,116 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <div class="subtitle">Hospital overview — <%= new Date().toDateString() %></div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#0d9488"><i class="bi bi-people"></i></div>
+      <div><div class="stat-value"><%= patientCount %></div><div class="stat-label">Total Patients</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#2563eb"><i class="bi bi-person-badge"></i></div>
+      <div><div class="stat-value"><%= doctorCount %></div><div class="stat-label">Active Doctors</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#d97706"><i class="bi bi-calendar-check"></i></div>
+      <div><div class="stat-value"><%= todayApptCount %></div><div class="stat-label">Today's Appointments</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dc2626"><i class="bi bi-hospital"></i></div>
+      <div><div class="stat-value"><%= admittedCount %></div><div class="stat-label">Admitted Patients</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#7c3aed"><i class="bi bi-building"></i></div>
+      <div><div class="stat-value"><%= bedOccupied %> / <%= bedTotal %></div><div class="stat-label">Beds Occupied</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#16a34a"><i class="bi bi-cash-coin"></i></div>
+      <div><div class="stat-value"><%= money(revenueToday) %></div><div class="stat-label">Revenue Today</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#ea580c"><i class="bi bi-exclamation-circle"></i></div>
+      <div><div class="stat-value"><%= money(unpaidTotal) %></div><div class="stat-label">Outstanding Balance</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#0891b2"><i class="bi bi-capsule"></i></div>
+      <div><div class="stat-value"><%= lowStock.length %></div><div class="stat-label">Low Stock Medicines</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="table-card">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <strong>Today's Appointments</strong>
+        <a href="/appointments" class="small">View all</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table hms-table mb-0">
+          <thead><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr></thead>
+          <tbody>
+            <% if (todayAppts.length === 0) { %>
+              <tr><td colspan="4" class="text-center text-muted py-3">No appointments scheduled today.</td></tr>
+            <% } %>
+            <% todayAppts.forEach(a => { %>
+              <tr>
+                <td><%= a.appointment_time %></td>
+                <td><%= a.patient_name %></td>
+                <td>Dr. <%= a.doctor_name %></td>
+                <td><span class="badge badge-status bg-<%= a.status==='completed'?'success':a.status==='cancelled'?'danger':'primary' %>"><%= a.status %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="table-card">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <strong>Low Stock Alerts</strong>
+        <a href="/pharmacy/stock" class="small">Manage stock</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table hms-table mb-0">
+          <thead><tr><th>Medicine</th><th>Qty</th><th>Reorder Level</th></tr></thead>
+          <tbody>
+            <% if (lowStock.length === 0) { %>
+              <tr><td colspan="3" class="text-center text-muted py-3">All stock levels healthy.</td></tr>
+            <% } %>
+            <% lowStock.forEach(m => { %>
+              <tr>
+                <td><%= m.name %></td>
+                <td><span class="badge bg-danger"><%= m.qty %></span></td>
+                <td><%= m.reorder_level %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

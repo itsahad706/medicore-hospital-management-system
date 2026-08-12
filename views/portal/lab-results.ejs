@@ -1,0 +1,26 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>My Lab Results</h1></div>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Date</th><th>Ordered By</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (orders.length === 0) { %><tr><td colspan="4" class="text-center text-muted py-4">No lab orders on record.</td></tr><% } %>
+        <% orders.forEach(o => { %>
+          <tr>
+            <td><%= new Date(o.order_date).toLocaleDateString() %></td>
+            <td>Dr. <%= o.doctor_name %></td>
+            <td><span class="badge badge-status bg-<%= o.status==='completed'?'success':'warning' %>"><%= o.status %></span></td>
+            <td class="text-end"><a href="/portal/lab-results/<%= o.id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

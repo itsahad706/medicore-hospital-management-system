@@ -1,0 +1,52 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Appointments</h1></div>
+  <% if (currentUser.role === 'admin' || currentUser.role === 'receptionist') { %>
+    <a href="/appointments/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Book Appointment</a>
+  <% } %>
+</div>
+
+<form method="GET" class="d-flex flex-wrap gap-2 mb-3">
+  <input type="date" name="date" class="form-control form-control-sm" style="width:auto" value="<%= filters.date %>">
+  <select name="status" class="form-select form-select-sm" style="width:auto">
+    <option value="">All Statuses</option>
+    <% ['scheduled','completed','cancelled','no_show'].forEach(s => { %>
+      <option value="<%= s %>" <%= filters.status===s?'selected':'' %>><%= s %></option>
+    <% }) %>
+  </select>
+  <% if (currentUser.role !== 'doctor') { %>
+    <select name="doctor_id" class="form-select form-select-sm" style="width:auto">
+      <option value="">All Doctors</option>
+      <% doctors.forEach(d => { %>
+        <option value="<%= d.id %>" <%= filters.doctor_id==d.id?'selected':'' %>>Dr. <%= d.name %></option>
+      <% }) %>
+    </select>
+  <% } %>
+  <button class="btn btn-sm btn-outline-secondary">Filter</button>
+  <a href="/appointments" class="btn btn-sm btn-link">Clear</a>
+</form>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (appointments.length === 0) { %><tr><td colspan="7" class="text-center text-muted py-4">No appointments found.</td></tr><% } %>
+        <% appointments.forEach(a => { %>
+          <tr>
+            <td><%= new Date(a.appointment_date).toLocaleDateString() %></td>
+            <td><%= a.appointment_time %></td>
+            <td><%= a.patient_name %> <span class="text-muted small">(<%= a.mrn %>)</span></td>
+            <td>Dr. <%= a.doctor_name %></td>
+            <td><%= a.reason || '—' %></td>
+            <td><span class="badge badge-status bg-<%= a.status==='completed'?'success':a.status==='cancelled'||a.status==='no_show'?'danger':'primary' %>"><%= a.status %></span></td>
+            <td class="text-end"><a href="/appointments/<%= a.id %>" class="btn btn-sm btn-outline-secondary">Open</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

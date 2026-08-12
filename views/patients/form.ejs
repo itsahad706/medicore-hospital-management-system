@@ -1,0 +1,85 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1><%= patient.id ? 'Edit Patient' : 'Register Patient' %></h1></div>
+</div>
+
+<div class="form-card" style="max-width:720px">
+  <form method="POST" action="<%= patient.id ? '/patients/' + patient.id + '?_method=PUT' : '/patients' %>">
+    <%- include('../partials/csrf') %>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name *</label>
+        <input type="text" name="name" class="form-control" required value="<%= patient.name || '' %>">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Date of Birth</label>
+        <input type="date" name="dob" class="form-control" value="<%= patient.dob ? new Date(patient.dob).toISOString().slice(0,10) : '' %>">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Gender *</label>
+        <select name="gender" class="form-select" required>
+          <option value="male" <%= patient.gender==='male'?'selected':'' %>>Male</option>
+          <option value="female" <%= patient.gender==='female'?'selected':'' %>>Female</option>
+          <option value="other" <%= patient.gender==='other'?'selected':'' %>>Other</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Blood Group</label>
+        <select name="blood_group" class="form-select">
+          <option value="">—</option>
+          <% ['A+','A-','B+','B-','AB+','AB-','O+','O-'].forEach(bg => { %>
+            <option value="<%= bg %>" <%= patient.blood_group===bg?'selected':'' %>><%= bg %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" value="<%= patient.phone || '' %>">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="<%= patient.email || '' %>">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Address</label>
+        <input type="text" name="address" class="form-control" value="<%= patient.address || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Emergency Contact</label>
+        <input type="text" name="emergency_contact" class="form-control" placeholder="Name & phone" value="<%= patient.emergency_contact || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Known Allergies</label>
+        <input type="text" name="allergies" class="form-control" value="<%= patient.allergies || '' %>">
+      </div>
+
+      <% if (patient.id) { %>
+        <div class="col-md-6">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option value="active" <%= patient.status==='active'?'selected':'' %>>Active</option>
+            <option value="inactive" <%= patient.status==='inactive'?'selected':'' %>>Inactive</option>
+          </select>
+        </div>
+      <% } else { %>
+        <div class="col-12">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="create_login" id="create_login">
+            <label class="form-check-label" for="create_login">Create a patient portal login for this patient (requires email)</label>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save Patient</button>
+      <a href="/patients" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

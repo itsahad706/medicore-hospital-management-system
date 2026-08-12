@@ -1,0 +1,53 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Appointment — <%= appt.patient_name %></h1>
+    <div class="subtitle">Dr. <%= appt.doctor_name %> &middot; <%= new Date(appt.appointment_date).toLocaleDateString() %> at <%= appt.appointment_time %></div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="/patients/<%= appt.patient_id %>" class="btn btn-outline-secondary btn-sm">View Patient</a>
+    <a href="/pharmacy/prescriptions/new?appointment_id=<%= appt.id %>&patient_id=<%= appt.patient_id %>" class="btn btn-outline-primary btn-sm"><i class="bi bi-capsule me-1"></i>Prescribe</a>
+    <a href="/lab/orders/new?appointment_id=<%= appt.id %>&patient_id=<%= appt.patient_id %>" class="btn btn-outline-primary btn-sm"><i class="bi bi-clipboard2-data me-1"></i>Order Lab Test</a>
+    <a href="/billing/invoices/new?patient_id=<%= appt.patient_id %>&appointment_id=<%= appt.id %>" class="btn btn-outline-primary btn-sm"><i class="bi bi-receipt me-1"></i>Bill</a>
+  </div>
+</div>
+
+<% if (appt.allergies) { %>
+  <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i><strong>Allergies:</strong> <%= appt.allergies %></div>
+<% } %>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="portal-card">
+      <div class="text-muted small">Reason for Visit</div>
+      <div class="fw-semibold"><%= appt.reason || '—' %></div>
+      <hr>
+      <div class="text-muted small">Status</div>
+      <span class="badge badge-status bg-<%= appt.status==='completed'?'success':appt.status==='cancelled'||appt.status==='no_show'?'danger':'primary' %> mb-2"><%= appt.status %></span>
+
+      <form method="POST" action="/appointments/<%= appt.id %>/status?_method=PUT" class="d-flex gap-2 mt-2">
+        <%- include('../partials/csrf') %>
+        <select name="status" class="form-select form-select-sm" style="width:auto">
+          <% ['scheduled','completed','cancelled','no_show'].forEach(s => { %>
+            <option value="<%= s %>" <%= appt.status===s?'selected':'' %>><%= s %></option>
+          <% }) %>
+        </select>
+        <button class="btn btn-sm btn-primary">Update Status</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="portal-card">
+      <div class="text-muted small mb-1">Clinical Notes</div>
+      <form method="POST" action="/appointments/<%= appt.id %>/notes?_method=PUT">
+        <%- include('../partials/csrf') %>
+        <textarea name="notes" class="form-control mb-2" rows="5"><%= appt.notes || '' %></textarea>
+        <button class="btn btn-sm btn-primary">Save Notes</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

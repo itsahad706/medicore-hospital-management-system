@@ -1,0 +1,58 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Book Appointment</h1></div>
+</div>
+
+<div class="form-card" style="max-width:640px">
+  <form method="POST" action="/appointments">
+    <%- include('../partials/csrf') %>
+
+    <div class="mb-3">
+      <label class="form-label">Patient *</label>
+      <select name="patient_id" class="form-select" required>
+        <option value="">— Select Patient —</option>
+        <% patients.forEach(p => { %>
+          <option value="<%= p.id %>" <%= String(preselectPatient)===String(p.id)?'selected':'' %>><%= p.name %> (<%= p.mrn %>)</option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Doctor *</label>
+      <select name="doctor_id" class="form-select" required>
+        <option value="">— Select Doctor —</option>
+        <% doctors.forEach(d => { %>
+          <option value="<%= d.id %>">Dr. <%= d.name %><%= d.dept ? ' — ' + d.dept : '' %> (Fee: <%= Number(d.consultation_fee).toFixed(2) %>)</option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Date *</label>
+        <input type="date" name="appointment_date" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Time *</label>
+        <input type="time" name="appointment_time" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="mb-3 mt-3">
+      <label class="form-label">Reason for Visit</label>
+      <input type="text" name="reason" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Notes</label>
+      <textarea name="notes" class="form-control" rows="2"></textarea>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Book Appointment</button>
+      <a href="/appointments" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

@@ -1,0 +1,29 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>My Invoices</h1></div>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Invoice #</th><th>Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (invoices.length === 0) { %><tr><td colspan="7" class="text-center text-muted py-4">No invoices on record.</td></tr><% } %>
+        <% invoices.forEach(i => { %>
+          <tr>
+            <td><%= i.invoice_number %></td>
+            <td><%= new Date(i.invoice_date).toLocaleDateString() %></td>
+            <td><%= money(i.total) %></td>
+            <td><%= money(i.amount_paid) %></td>
+            <td><%= money(i.total - i.amount_paid) %></td>
+            <td><span class="badge badge-status bg-<%= i.status==='paid'?'success':i.status==='partial'?'warning':'danger' %>"><%= i.status %></span></td>
+            <td class="text-end"><a href="/portal/invoices/<%= i.id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

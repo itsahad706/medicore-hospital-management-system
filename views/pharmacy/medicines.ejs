@@ -1,0 +1,88 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Medicines Catalog</h1></div>
+  <% if (currentUser.role === 'admin') { %>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newMedModal"><i class="bi bi-plus-lg me-1"></i>Add Medicine</button>
+  <% } %>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Name</th><th>Generic</th><th>Category</th><th>Unit</th><th>Price</th><th>In Stock</th><th>Reorder Level</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (medicines.length === 0) { %><tr><td colspan="9" class="text-center text-muted py-4">No medicines in catalog.</td></tr><% } %>
+        <% medicines.forEach(m => { %>
+          <tr>
+            <td><%= m.name %></td>
+            <td><%= m.generic_name || '—' %></td>
+            <td><%= m.category || '—' %></td>
+            <td><%= m.unit %></td>
+            <td><%= Number(m.unit_price).toFixed(2) %></td>
+            <td><span class="badge bg-<%= m.in_stock <= m.reorder_level ? 'danger' : 'success' %>"><%= m.in_stock %></span></td>
+            <td><%= m.reorder_level %></td>
+            <td><span class="badge badge-status bg-<%= m.status==='active'?'success':'secondary' %>"><%= m.status %></span></td>
+            <td class="text-end">
+              <% if (currentUser.role === 'admin') { %>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editMed<%= m.id %>"><i class="bi bi-pencil"></i></button>
+                <form method="POST" action="/pharmacy/medicines/<%= m.id %>?_method=DELETE" class="d-inline" data-confirm="Remove this medicine?">
+                  <%- include('../partials/csrf') %>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+
+          <div class="modal fade" id="editMed<%= m.id %>">
+            <div class="modal-dialog"><div class="modal-content">
+              <form method="POST" action="/pharmacy/medicines/<%= m.id %>?_method=PUT">
+                <%- include('../partials/csrf') %>
+                <div class="modal-header"><h5 class="modal-title">Edit Medicine</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                  <div class="row g-2">
+                    <div class="col-6"><label class="form-label">Name</label><input class="form-control" name="name" value="<%= m.name %>" required></div>
+                    <div class="col-6"><label class="form-label">Generic Name</label><input class="form-control" name="generic_name" value="<%= m.generic_name || '' %>"></div>
+                    <div class="col-6"><label class="form-label">Category</label><input class="form-control" name="category" value="<%= m.category || '' %>"></div>
+                    <div class="col-6"><label class="form-label">Unit</label><input class="form-control" name="unit" value="<%= m.unit %>"></div>
+                    <div class="col-6"><label class="form-label">Unit Price</label><input type="number" step="0.01" class="form-control" name="unit_price" value="<%= m.unit_price %>"></div>
+                    <div class="col-6"><label class="form-label">Reorder Level</label><input type="number" class="form-control" name="reorder_level" value="<%= m.reorder_level %>"></div>
+                    <div class="col-6"><label class="form-label">Status</label>
+                      <select class="form-select" name="status">
+                        <option value="active" <%= m.status==='active'?'selected':'' %>>Active</option>
+                        <option value="inactive" <%= m.status==='inactive'?'selected':'' %>>Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-primary">Save</button></div>
+              </form>
+            </div></div>
+          </div>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="newMedModal">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="POST" action="/pharmacy/medicines">
+      <%- include('../partials/csrf') %>
+      <div class="modal-header"><h5 class="modal-title">Add Medicine</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
+          <div class="col-6"><label class="form-label">Generic Name</label><input class="form-control" name="generic_name"></div>
+          <div class="col-6"><label class="form-label">Category</label><input class="form-control" name="category"></div>
+          <div class="col-6"><label class="form-label">Unit</label><input class="form-control" name="unit" value="tablet"></div>
+          <div class="col-6"><label class="form-label">Unit Price</label><input type="number" step="0.01" class="form-control" name="unit_price" value="0"></div>
+          <div class="col-6"><label class="form-label">Reorder Level</label><input type="number" class="form-control" name="reorder_level" value="20"></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-primary">Add Medicine</button></div>
+    </form>
+  </div></div>
+</div>
+
+<%- include('../partials/app-bottom') %>

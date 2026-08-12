@@ -1,0 +1,37 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Doctors</h1></div>
+  <% if (currentUser.role === 'admin') { %>
+    <a href="/doctors/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Doctor</a>
+  <% } %>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Name</th><th>Department</th><th>Specialization</th><th>Fee</th><th>Schedule</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (doctors.length === 0) { %><tr><td colspan="7" class="text-center text-muted py-4">No doctors added yet.</td></tr><% } %>
+        <% doctors.forEach(d => { %>
+          <tr>
+            <td><a href="/doctors/<%= d.id %>">Dr. <%= d.name %></a></td>
+            <td><%= d.department_name || '—' %></td>
+            <td><%= d.specialization || '—' %></td>
+            <td><%= Number(d.consultation_fee).toFixed(2) %></td>
+            <td class="small"><%= d.schedule_days %><br><%= d.schedule_start %>–<%= d.schedule_end %></td>
+            <td><span class="badge badge-status bg-<%= d.status==='active'?'success':'secondary' %>"><%= d.status %></span></td>
+            <td class="text-end">
+              <a href="/doctors/<%= d.id %>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+              <% if (currentUser.role === 'admin') { %>
+                <a href="/doctors/<%= d.id %>/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

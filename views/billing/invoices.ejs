@@ -1,0 +1,42 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Invoices</h1></div>
+  <% if (currentUser.role === 'admin' || currentUser.role === 'receptionist') { %>
+    <a href="/billing/invoices/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New Invoice</a>
+  <% } %>
+</div>
+
+<form method="GET" class="mb-3 d-flex gap-2">
+  <select name="status" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+    <option value="">All Statuses</option>
+    <% ['unpaid','partial','paid','cancelled'].forEach(s => { %>
+      <option value="<%= s %>" <%= filters.status===s?'selected':'' %>><%= s %></option>
+    <% }) %>
+  </select>
+</form>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Invoice #</th><th>Patient</th><th>Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (invoices.length === 0) { %><tr><td colspan="8" class="text-center text-muted py-4">No invoices found.</td></tr><% } %>
+        <% invoices.forEach(i => { %>
+          <tr>
+            <td><%= i.invoice_number %></td>
+            <td><%= i.patient_name %> <span class="text-muted small">(<%= i.mrn %>)</span></td>
+            <td><%= new Date(i.invoice_date).toLocaleDateString() %></td>
+            <td><%= money(i.total) %></td>
+            <td><%= money(i.amount_paid) %></td>
+            <td><%= money(i.total - i.amount_paid) %></td>
+            <td><span class="badge badge-status bg-<%= i.status==='paid'?'success':i.status==='partial'?'warning':i.status==='cancelled'?'secondary':'danger' %>"><%= i.status %></span></td>
+            <td class="text-end"><a href="/billing/invoices/<%= i.id %>" class="btn btn-sm btn-outline-secondary">Open</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

@@ -1,0 +1,16 @@
+<% if (typeof success !== 'undefined' && success && success.length) { %>
+  <% success.forEach(function(msg) { %>
+    <div class="alert alert-success alert-dismissible fade show no-print" role="alert">
+      <i class="bi bi-check-circle me-1"></i> <%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% }); %>
+<% } %>
+<% if (typeof error !== 'undefined' && error && error.length) { %>
+  <% error.forEach(function(msg) { %>
+    <div class="alert alert-danger alert-dismissible fade show no-print" role="alert">
+      <i class="bi bi-exclamation-triangle me-1"></i> <%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% }); %>
+<% } %>

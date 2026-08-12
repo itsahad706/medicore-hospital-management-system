@@ -1,0 +1,40 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Admissions</h1></div>
+  <% if (currentUser.role === 'admin' || currentUser.role === 'receptionist') { %>
+    <a href="/wards/admissions/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Admit Patient</a>
+  <% } %>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Patient</th><th>Ward / Bed</th><th>Doctor</th><th>Admitted</th><th>Discharged</th><th>Diagnosis</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% if (admissions.length === 0) { %><tr><td colspan="8" class="text-center text-muted py-4">No admissions recorded.</td></tr><% } %>
+        <% admissions.forEach(a => { %>
+          <tr>
+            <td><%= a.patient_name %> <span class="text-muted small">(<%= a.mrn %>)</span></td>
+            <td><%= a.ward_name %> / <%= a.bed_number %></td>
+            <td>Dr. <%= a.doctor_name %></td>
+            <td><%= new Date(a.admission_date).toLocaleString() %></td>
+            <td><%= a.discharge_date ? new Date(a.discharge_date).toLocaleString() : '—' %></td>
+            <td><%= a.diagnosis || '—' %></td>
+            <td><span class="badge badge-status bg-<%= a.status==='admitted'?'warning':'secondary' %>"><%= a.status %></span></td>
+            <td class="text-end">
+              <% if (a.status === 'admitted') { %>
+                <form method="POST" action="/wards/admissions/<%= a.id %>/discharge?_method=PUT" data-confirm="Discharge this patient?" class="d-inline">
+                  <%- include('../partials/csrf') %>
+                  <button class="btn btn-sm btn-outline-success">Discharge</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

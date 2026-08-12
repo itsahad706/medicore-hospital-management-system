@@ -1,0 +1,58 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Welcome, <%= currentUser.name %></h1>
+    <div class="subtitle">Your care summary</div>
+  </div>
+</div>
+
+<% if (!patient) { %>
+  <div class="alert alert-warning">Your patient profile hasn't been linked yet. Please contact the front desk.</div>
+<% } else { %>
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="portal-card mb-3">
+        <strong><i class="bi bi-calendar-check me-2"></i>Upcoming Appointments</strong>
+        <table class="table hms-table mt-2 mb-0">
+          <tbody>
+            <% if (appointments.length === 0) { %>
+              <tr><td class="text-center text-muted py-3">No upcoming appointments.</td></tr>
+            <% } %>
+            <% appointments.forEach(a => { %>
+              <tr>
+                <td>
+                  <%= new Date(a.appointment_date).toLocaleDateString() %> at <%= a.appointment_time %><br>
+                  <span class="text-muted small">Dr. <%= a.doctor_name %></span>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <a href="/portal/appointments" class="small">View all my appointments &rarr;</a>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="portal-card mb-3">
+        <strong><i class="bi bi-receipt me-2"></i>Outstanding Invoices</strong>
+        <table class="table hms-table mt-2 mb-0">
+          <tbody>
+            <% if (invoices.length === 0) { %>
+              <tr><td class="text-center text-muted py-3">No outstanding invoices. You're all paid up!</td></tr>
+            <% } %>
+            <% invoices.forEach(i => { %>
+              <tr>
+                <td><%= i.invoice_number %></td>
+                <td><%= money(i.total - i.amount_paid) %> due</td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <a href="/portal/invoices" class="small">View all my invoices &rarr;</a>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/app-bottom') %>

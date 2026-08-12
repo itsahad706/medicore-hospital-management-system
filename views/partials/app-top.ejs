@@ -1,0 +1,127 @@
+<%- include('./head', { title: typeof title !== 'undefined' ? title : '' }) %>
+
+<div class="app-wrapper">
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+  <aside class="sidebar no-print">
+    <div class="sidebar-brand">
+      <i class="bi bi-hospital"></i> <span>MediCore HMS</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/dashboard" class="<%= currentPath && currentPath.startsWith('/dashboard') ? 'active' : '' %>">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+
+      <% if (currentUser && currentUser.role === 'patient') { %>
+        <div class="nav-section">My Care</div>
+        <a href="/portal/appointments" class="<%= currentPath && currentPath.startsWith('/portal/appointments') ? 'active' : '' %>">
+          <i class="bi bi-calendar-check"></i> My Appointments
+        </a>
+        <a href="/portal/prescriptions" class="<%= currentPath && currentPath.startsWith('/portal/prescriptions') ? 'active' : '' %>">
+          <i class="bi bi-capsule"></i> My Prescriptions
+        </a>
+        <a href="/portal/lab-results" class="<%= currentPath && currentPath.startsWith('/portal/lab-results') ? 'active' : '' %>">
+          <i class="bi bi-clipboard2-pulse"></i> My Lab Results
+        </a>
+        <a href="/portal/invoices" class="<%= currentPath && currentPath.startsWith('/portal/invoices') ? 'active' : '' %>">
+          <i class="bi bi-receipt"></i> My Invoices
+        </a>
+      <% } else { %>
+
+        <div class="nav-section">Front Desk</div>
+        <a href="/patients" class="<%= currentPath && currentPath.startsWith('/patients') ? 'active' : '' %>">
+          <i class="bi bi-people"></i> Patients
+        </a>
+        <a href="/appointments" class="<%= currentPath && currentPath.startsWith('/appointments') ? 'active' : '' %>">
+          <i class="bi bi-calendar-check"></i> Appointments
+        </a>
+
+        <% if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'doctor')) { %>
+          <div class="nav-section">Doctors</div>
+          <a href="/doctors" class="<%= currentPath && currentPath.startsWith('/doctors') ? 'active' : '' %>">
+            <i class="bi bi-person-badge"></i> Doctors
+          </a>
+          <a href="/departments" class="<%= currentPath && currentPath.startsWith('/departments') ? 'active' : '' %>">
+            <i class="bi bi-diagram-3"></i> Departments
+          </a>
+        <% } %>
+
+        <div class="nav-section">Inpatient</div>
+        <a href="/wards" class="<%= currentPath && currentPath.startsWith('/wards') ? 'active' : '' %>">
+          <i class="bi bi-building"></i> Wards &amp; Beds
+        </a>
+        <a href="/wards/admissions" class="<%= currentPath && currentPath.startsWith('/wards/admissions') ? 'active' : '' %>">
+          <i class="bi bi-clipboard2-pulse"></i> Admissions
+        </a>
+
+        <div class="nav-section">Pharmacy</div>
+        <a href="/pharmacy/medicines" class="<%= currentPath && currentPath.startsWith('/pharmacy/medicines') ? 'active' : '' %>">
+          <i class="bi bi-capsule"></i> Medicines
+        </a>
+        <a href="/pharmacy/stock" class="<%= currentPath && currentPath.startsWith('/pharmacy/stock') ? 'active' : '' %>">
+          <i class="bi bi-box-seam"></i> Stock
+        </a>
+        <a href="/pharmacy/prescriptions" class="<%= currentPath && currentPath.startsWith('/pharmacy/prescriptions') ? 'active' : '' %>">
+          <i class="bi bi-file-medical"></i> Prescriptions
+        </a>
+
+        <div class="nav-section">Laboratory</div>
+        <a href="/lab/tests" class="<%= currentPath && currentPath.startsWith('/lab/tests') ? 'active' : '' %>">
+          <i class="bi bi-list-check"></i> Test Catalog
+        </a>
+        <a href="/lab/orders" class="<%= currentPath && currentPath.startsWith('/lab/orders') ? 'active' : '' %>">
+          <i class="bi bi-clipboard2-data"></i> Lab Orders
+        </a>
+
+        <div class="nav-section">Finance</div>
+        <a href="/billing/invoices" class="<%= currentPath && currentPath.startsWith('/billing/invoices') ? 'active' : '' %>">
+          <i class="bi bi-receipt"></i> Invoices
+        </a>
+        <a href="/billing/payments" class="<%= currentPath && currentPath.startsWith('/billing/payments') ? 'active' : '' %>">
+          <i class="bi bi-cash-coin"></i> Payments
+        </a>
+        <% if (currentUser && currentUser.role === 'admin') { %>
+          <a href="/accounting/accounts" class="<%= currentPath && currentPath.startsWith('/accounting') ? 'active' : '' %>">
+            <i class="bi bi-journal-text"></i> Accounting
+          </a>
+        <% } %>
+
+        <% if (currentUser && currentUser.role === 'admin') { %>
+          <div class="nav-section">Administration</div>
+          <a href="/users" class="<%= currentPath && currentPath.startsWith('/users') ? 'active' : '' %>">
+            <i class="bi bi-person-gear"></i> Users
+          </a>
+          <a href="/settings" class="<%= currentPath && currentPath.startsWith('/settings') ? 'active' : '' %>">
+            <i class="bi bi-gear"></i> Settings
+          </a>
+        <% } %>
+      <% } %>
+    </nav>
+  </aside>
+
+  <!-- ── MAIN AREA ─────────────────────────────────────────────── -->
+  <div class="main-area">
+    <header class="topbar no-print">
+      <button class="sidebar-toggle d-lg-none" id="sidebarToggle"><i class="bi bi-list"></i></button>
+      <div class="topbar-spacer"></div>
+      <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle"></i>
+          <%= currentUser ? currentUser.name : 'Guest' %>
+          <span class="badge bg-secondary text-uppercase ms-1"><%= currentUser ? currentUser.role : '' %></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/auth/change-password"><i class="bi bi-key me-2"></i>Change Password</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form action="/auth/logout?_method=DELETE" method="POST">
+              <%- include('./csrf') %>
+              <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="content">
+      <%- include('./alerts') %>

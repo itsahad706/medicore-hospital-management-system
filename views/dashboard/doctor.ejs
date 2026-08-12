@@ -1,0 +1,92 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div>
+    <h1>Welcome, Dr. <%= currentUser.name %></h1>
+    <div class="subtitle"><%= doctor ? doctor.specialization : '' %> — <%= new Date().toDateString() %></div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#0d9488"><i class="bi bi-calendar-day"></i></div>
+      <div><div class="stat-value"><%= todayAppts.length %></div><div class="stat-label">Today's Appointments</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#2563eb"><i class="bi bi-calendar-check"></i></div>
+      <div><div class="stat-value"><%= upcomingCount %></div><div class="stat-label">Upcoming Scheduled</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#7c3aed"><i class="bi bi-people"></i></div>
+      <div><div class="stat-value"><%= patientCount %></div><div class="stat-label">Patients Seen</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#d97706"><i class="bi bi-clipboard2-pulse"></i></div>
+      <div><div class="stat-value"><%= pendingLab.length %></div><div class="stat-label">Pending Lab Orders</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="table-card">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <strong>Today's Schedule</strong>
+        <a href="/appointments" class="small">View all</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table hms-table mb-0">
+          <thead><tr><th>Time</th><th>Patient</th><th>MRN</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <% if (todayAppts.length === 0) { %>
+              <tr><td colspan="5" class="text-center text-muted py-3">No appointments today.</td></tr>
+            <% } %>
+            <% todayAppts.forEach(a => { %>
+              <tr>
+                <td><%= a.appointment_time %></td>
+                <td><%= a.patient_name %></td>
+                <td><%= a.mrn %></td>
+                <td><span class="badge badge-status bg-<%= a.status==='completed'?'success':a.status==='cancelled'?'danger':'primary' %>"><%= a.status %></span></td>
+                <td><a href="/appointments/<%= a.id %>" class="btn btn-sm btn-outline-primary">Open</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="table-card">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <strong>Pending Lab Results</strong>
+        <a href="/lab/orders" class="small">View all</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table hms-table mb-0">
+          <thead><tr><th>Patient</th><th>Ordered</th></tr></thead>
+          <tbody>
+            <% if (pendingLab.length === 0) { %>
+              <tr><td colspan="2" class="text-center text-muted py-3">No pending lab orders.</td></tr>
+            <% } %>
+            <% pendingLab.forEach(l => { %>
+              <tr>
+                <td><%= l.patient_name %></td>
+                <td><%= new Date(l.order_date).toLocaleDateString() %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>

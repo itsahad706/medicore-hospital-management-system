@@ -1,0 +1,91 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1><%= doctor.id ? 'Edit Doctor' : 'Add Doctor' %></h1></div>
+</div>
+
+<div class="form-card" style="max-width:760px">
+  <form method="POST" action="<%= doctor.id ? '/doctors/' + doctor.id + '?_method=PUT' : '/doctors' %>">
+    <%- include('../partials/csrf') %>
+
+    <h6 class="text-muted mb-3">Account Details</h6>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label">Full Name *</label>
+        <input type="text" name="name" class="form-control" required value="<%= user.name || '' %>">
+      </div>
+      <% if (!doctor.id) { %>
+        <div class="col-md-6">
+          <label class="form-label">Username *</label>
+          <input type="text" name="username" class="form-control" required>
+        </div>
+      <% } %>
+      <div class="col-md-6">
+        <label class="form-label">Email *</label>
+        <input type="email" name="email" class="form-control" required value="<%= user.email || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" value="<%= user.phone || '' %>">
+      </div>
+      <% if (!doctor.id) { %>
+        <div class="col-md-6">
+          <label class="form-label">Password *</label>
+          <input type="password" name="password" class="form-control" required minlength="6">
+        </div>
+      <% } else { %>
+        <div class="col-md-6">
+          <label class="form-label">Account Status</label>
+          <select name="status" class="form-select">
+            <option value="active" <%= user.user_status==='active'?'selected':'' %>>Active</option>
+            <option value="inactive" <%= user.user_status==='inactive'?'selected':'' %>>Inactive</option>
+          </select>
+        </div>
+      <% } %>
+    </div>
+
+    <h6 class="text-muted mb-3">Professional Details</h6>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Department</label>
+        <select name="department_id" class="form-select">
+          <option value="">— None —</option>
+          <% departments.forEach(dep => { %>
+            <option value="<%= dep.id %>" <%= doctor.department_id==dep.id?'selected':'' %>><%= dep.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Specialization</label>
+        <input type="text" name="specialization" class="form-control" value="<%= doctor.specialization || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Qualification</label>
+        <input type="text" name="qualification" class="form-control" value="<%= doctor.qualification || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Consultation Fee</label>
+        <input type="number" step="0.01" name="consultation_fee" class="form-control" value="<%= doctor.consultation_fee || 0 %>">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Working Days</label>
+        <input type="text" name="schedule_days" class="form-control" value="<%= doctor.schedule_days || 'Mon,Tue,Wed,Thu,Fri' %>">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Start Time</label>
+        <input type="time" name="schedule_start" class="form-control" value="<%= doctor.schedule_start || '09:00' %>">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Time</label>
+        <input type="time" name="schedule_end" class="form-control" value="<%= doctor.schedule_end || '17:00' %>">
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save Doctor</button>
+      <a href="/doctors" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/app-bottom') %>

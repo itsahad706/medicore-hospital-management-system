@@ -1,0 +1,45 @@
+<%- include('../partials/app-top') %>
+
+<div class="page-header">
+  <div><h1>Users</h1></div>
+  <a href="/users/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add User</a>
+</div>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="table hms-table mb-0">
+      <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead>
+      <tbody>
+        <% users.forEach(u => { %>
+          <tr>
+            <td><%= u.name %></td>
+            <td><%= u.username %></td>
+            <td><%= u.email %></td>
+            <td><span class="badge bg-secondary text-uppercase"><%= u.role %></span></td>
+            <td><span class="badge badge-status bg-<%= u.status==='active'?'success':'secondary' %>"><%= u.status %></span></td>
+            <td class="small text-muted"><%= u.last_login ? new Date(u.last_login).toLocaleString() : 'Never' %></td>
+            <td class="text-end">
+              <% if (u.role !== 'doctor') { %>
+                <a href="/users/<%= u.id %>/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                <form method="POST" action="/users/<%= u.id %>/reset-password?_method=PUT" class="d-inline" data-confirm="Reset this user's password?">
+                  <%- include('../partials/csrf') %>
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-key"></i></button>
+                </form>
+                <% if (u.id !== currentUser.id) { %>
+                  <form method="POST" action="/users/<%= u.id %>?_method=DELETE" class="d-inline" data-confirm="Delete this user?">
+                    <%- include('../partials/csrf') %>
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </form>
+                <% } %>
+              <% } else { %>
+                <span class="text-muted small">Manage via Doctors</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>
